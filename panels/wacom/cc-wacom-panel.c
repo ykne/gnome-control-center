@@ -37,7 +37,9 @@
 #include "shell/cc-log.h"
 #include "shell/cc-window.h"
 
+#ifdef GDK_WINDOWING_WAYLAND
 #include <gdk/wayland/gdkwayland.h>
+#endif
 
 #define POLL_MS 300
 

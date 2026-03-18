@@ -32,7 +32,9 @@
 #include "file-share-properties.h"
 #include "org.gnome.SettingsDaemon.Sharing.h"
 
+#ifdef GDK_WINDOWING_WAYLAND
 #include <gdk/wayland/gdkwayland.h>
+#endif
 #include <glib/gi18n.h>
 
 #include <config.h>
