@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2010 Bastien Nocera <hadess@hadess.net>
+ * Copyright 2015  Red Hat, Inc,
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,22 +14,20 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
+ *
+ * Author: Felipe Borges <feborges@redhat.com>
  */
 
 #pragma once
 
-G_BEGIN_DECLS
-
-#include <gdk/gdk.h>
 #include <glib.h>
 
-gboolean  touchpad_is_present      (void);
-gboolean  touchscreen_is_present   (void);
-gboolean  mouse_is_present         (void);
-gboolean  pointingstick_is_present (void);
+G_BEGIN_DECLS
 
-#ifdef HAVE_X11
-char     *xdevice_get_device_node (int deviceid);
-#endif
+gboolean cc_touchpad_check_capabilities (gboolean *have_two_finger_scrolling,
+                                         gboolean *have_edge_scrolling,
+                                         gboolean *have_tap_to_click);
+
+gboolean cc_synaptics_check (void);
 
 G_END_DECLS

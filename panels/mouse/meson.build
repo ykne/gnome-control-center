@@ -36,6 +36,7 @@ common_sources = gnome.compile_resources(
 
 sources = common_sources + files(
   'cc-mouse-panel.c',
+  'cc-mouse-caps-helper.c',
   'cc-mouse-test.c',
 )
 
@@ -43,6 +44,9 @@ deps = common_deps + [
   gnome_settings_dep,
   libdevice_dep,
 ]
+if have_x11_support
+  deps += [x11_dep, xi_dep]
+endif
 
 panels_libs += static_library(
   cappletname + '-properties',
