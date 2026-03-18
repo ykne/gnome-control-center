@@ -42,7 +42,12 @@
 
 #include <gdk/gdk.h>
 
+#ifdef GDK_WINDOWING_WAYLAND
 #include <gdk/wayland/gdkwayland.h>
+#endif
+#ifdef HAVE_X11
+#include <gdk/x11/gdkx.h>
+#endif
 #include <locale.h>
 
 #include "cc-system-details-window.h"
@@ -642,10 +647,15 @@ get_windowing_system (void)
 
   display = gdk_display_get_default ();
 
+#if defined(HAVE_X11)
+  if (GDK_IS_X11_DISPLAY (display))
+    return _("X11");
+#endif /* HAVE_X11 */
+#if defined(GDK_WINDOWING_WAYLAND)
   if (GDK_IS_WAYLAND_DISPLAY (display))
     return _("Wayland");
-
-  return C_("Windowing system (Wayland, or Unknown)", "Unknown");
+#endif /* GDK_WINDOWING_WAYLAND */
+  return C_("Windowing system (Wayland, X11, or Unknown)", "Unknown");
 }
 
 guint64
