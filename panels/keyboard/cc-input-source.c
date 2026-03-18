@@ -18,7 +18,9 @@
 #include "cc-input-source.h"
 #include <config.h>
 
+#ifdef GDK_WINDOWING_WAYLAND
 #include <gdk/wayland/gdkwayland.h>
+#endif
 
 enum {
     SIGNAL_LABEL_CHANGED,
@@ -106,6 +108,7 @@ launch_viewer (CcInputSource *source, const gchar *handle)
     g_spawn_async (NULL, (gchar **) argv->pdata, NULL, G_SPAWN_DEFAULT, NULL, NULL, NULL, NULL);
 }
 
+#ifdef GDK_WINDOWING_WAYLAND
 static void
 toplevel_handle_exported (GdkToplevel *toplevel, const gchar *handle, gpointer user_data)
 {
@@ -113,20 +116,26 @@ toplevel_handle_exported (GdkToplevel *toplevel, const gchar *handle, gpointer u
 
     launch_viewer (source, handle);
 }
+#endif
 
 void
 cc_input_source_launch_previewer (CcInputSource *source, GtkWidget *requester)
 {
+    GdkDisplay *display G_GNUC_UNUSED;
+
     g_return_if_fail (CC_IS_INPUT_SOURCE (source));
 
-    GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (requester));
+#ifdef GDK_WINDOWING_WAYLAND
+    display = gtk_widget_get_display (GTK_WIDGET (requester));
 
     if (GDK_IS_WAYLAND_DISPLAY (display)) {
         GtkRoot *root = gtk_widget_get_root (GTK_WIDGET (requester));
         GdkSurface *surface = gtk_native_get_surface (GTK_NATIVE (root));
 
         gdk_wayland_toplevel_export_handle (GDK_TOPLEVEL (surface), toplevel_handle_exported, source, NULL);
-    } else {
+    } else
+#endif
+    {
         launch_viewer (source, NULL);
     }
 }
