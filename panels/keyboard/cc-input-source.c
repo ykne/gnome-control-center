@@ -18,7 +18,9 @@
 #include <config.h>
 #include "cc-input-source.h"
 
+#ifdef GDK_WINDOWING_WAYLAND
 #include <gdk/wayland/gdkwayland.h>
+#endif
 
 enum
 {
@@ -118,6 +120,7 @@ launch_viewer (CcInputSource *source,
                  G_SPAWN_DEFAULT, NULL, NULL, NULL, NULL);
 }
 
+#ifdef GDK_WINDOWING_WAYLAND
 static void
 toplevel_handle_exported (GdkToplevel *toplevel,
                           const gchar *handle,
@@ -127,14 +130,18 @@ toplevel_handle_exported (GdkToplevel *toplevel,
 
   launch_viewer (source, handle);
 }
+#endif
 
 void
 cc_input_source_launch_previewer (CcInputSource *source,
                                   GtkWidget     *requester)
 {
+  GdkDisplay *display G_GNUC_UNUSED;
+
   g_return_if_fail (CC_IS_INPUT_SOURCE (source));
 
-  GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (requester));
+#ifdef GDK_WINDOWING_WAYLAND
+  display = gtk_widget_get_display (GTK_WIDGET (requester));
 
   if (GDK_IS_WAYLAND_DISPLAY (display))
     {
@@ -147,6 +154,7 @@ cc_input_source_launch_previewer (CcInputSource *source,
                                           NULL);
     }
   else
+#endif
     {
       launch_viewer (source, NULL);
     }

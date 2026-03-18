@@ -113,6 +113,9 @@ deps = common_deps + [
   gnome_desktop_dep,
   polkit_gobject_dep,
 ]
+if have_x11_support
+  deps += [x11_dep]
+endif
 
 if enable_ibus
   deps += ibus_dep

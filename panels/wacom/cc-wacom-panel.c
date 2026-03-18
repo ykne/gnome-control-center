@@ -36,7 +36,9 @@
 #include "cc-tablet-tool-map.h"
 #include "gsd-device-manager.h"
 
+#ifdef GDK_WINDOWING_WAYLAND
 #include <gdk/wayland/gdkwayland.h>
+#endif
 
 #define POLL_MS 300
 

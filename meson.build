@@ -297,6 +297,14 @@ config_h.set10('HAVE_CUPS_HTTPCONNECT2',
                cc.has_function('httpConnect2', dependencies: cups_dep),
                description: 'Define if httpConnect2() is available in CUPS')
 
+# X11
+have_x11_support = get_option('x11')
+if have_x11_support
+  x11_dep = dependency('x11', version: '>= 1.8')
+  xi_dep = dependency('xi', version: '>= 1.2')
+endif
+config_h.set('HAVE_X11', have_x11_support, description: 'Defined if X11 support is enabled')
+
 
 # IBus support
 enable_ibus = get_option('ibus')
