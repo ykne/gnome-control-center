@@ -26,7 +26,9 @@
 #endif /* FAKE_AREA */
 
 #include <gdesktop-enums.h>
+#ifdef GDK_WINDOWING_WAYLAND
 #include <gdk/wayland/gdkwayland.h>
+#endif
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
