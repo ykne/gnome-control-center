@@ -20,7 +20,7 @@ VERSION := 50.4
 .PHONY: srpm
 srpm:
 	set -e; \
-	dnf install -y meson; \
+	dnf install -y git-core meson; \
 	git submodule update --init -- subprojects/gvc; \
 	meson subprojects download libgxdp; \
 	hash=$$(git rev-parse --short=8 HEAD); \
