@@ -17,10 +17,15 @@
 PKG := gnome-control-center
 VERSION := 50.4
 
+NEEDS_LOCAL_REPO :=
+MOCK_CHROOT ?= fedora-44-x86_64
+LOCAL_REPO ?= $(HOME)/gnome-x11-build/copr/RPMS
+
 .PHONY: srpm
 srpm:
 	set -e; \
-	dnf install -y git-core meson; \
+	command -v git >/dev/null 2>&1 || dnf install -y git-core; \
+	command -v meson >/dev/null 2>&1 || dnf install -y meson; \
 	git submodule update --init -- subprojects/gvc; \
 	meson subprojects download libgxdp; \
 	hash=$$(git rev-parse --short=8 HEAD); \
@@ -40,3 +45,24 @@ srpm:
 		--define "_srcrpmdir $(outdir)" \
 		"$$workdir/$(PKG).spec"; \
 	rm -rf "$$workdir"
+
+# Local-only: build the SRPM (above) into a binary RPM via mock, then
+# publish it into a shared local repo so sibling packages' local builds
+# can pick it up. Copr never calls this target - it gets equivalent
+# cross-package visibility for free via its own project repo.
+.PHONY: local-build
+local-build: srpm
+	set -e; \
+	mkdir -p "$(LOCAL_REPO)/x86_64" "$(LOCAL_REPO)/noarch"; \
+	[ -f "$(LOCAL_REPO)/repodata/repomd.xml" ] || createrepo_c "$(LOCAL_REPO)"; \
+	srpm=$$(ls -t "$(outdir)"/$(PKG)-$(VERSION)-*.src.rpm | head -n1); \
+	resultdir=$$(mktemp -d); \
+	physical_cores=$$(lscpu | awk -F: '/^Core\(s\) per socket/{c=$$2} /^Socket\(s\)/{s=$$2} END{gsub(/ /,"",c); gsub(/ /,"",s); print c*s}'); \
+	mock -r $(MOCK_CHROOT) --resultdir="$$resultdir" \
+		--define "_smp_mflags -j$${physical_cores}" \
+		$(if $(NEEDS_LOCAL_REPO),--addrepo="file://$(LOCAL_REPO)",) \
+		--rebuild "$$srpm"; \
+	cp "$$resultdir"/*.x86_64.rpm "$(LOCAL_REPO)/x86_64/" 2>/dev/null || true; \
+	cp "$$resultdir"/*.noarch.rpm "$(LOCAL_REPO)/noarch/" 2>/dev/null || true; \
+	createrepo_c "$(LOCAL_REPO)"; \
+	rm -rf "$$resultdir"
