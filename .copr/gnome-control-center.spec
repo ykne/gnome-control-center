@@ -18,7 +18,7 @@
 
 Name:           gnome-control-center
 Epoch:          1
-Version:        51.1
+Version:        51.2.1
 Release:        %autorelease
 Summary:        Utilities to configure the GNOME desktop
 
