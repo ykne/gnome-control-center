@@ -15,7 +15,7 @@
 # rather than relying on any project-level buildroot package list.
 
 PKG := gnome-control-center
-VERSION := 50.4
+VERSION := 50.5
 
 NEEDS_LOCAL_REPO :=
 MOCK_CHROOT ?= fedora-44-x86_64
